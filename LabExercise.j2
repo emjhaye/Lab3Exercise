@@ -1,0 +1,21 @@
+{% for router in routers %}
+!
+hostname {{ router.hostname }}
+!
+interface Loopback0
+ ip address {{ router.loopback.ip }} {{ router.loopback.netmask }}
+!
+{% for interface in router.interfaces %}
+interface {{ interface.name }}
+ ip address {{ interface.ip }} {{ interface.netmask }}
+ ip ospf 1 area 0
+{% endfor %}
+!
+router ospf 1
+ router-id {{ router.ospf_router_id }}
+ network {{ router.loopback.ip }} 0.0.0.0 area 0
+{% for interface in router.interfaces %}
+ network {{ interface.network }} {{ interface.wildcard }} area 0
+{% endfor %}
+!
+{% endfor %}
